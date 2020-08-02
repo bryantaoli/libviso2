@@ -64,7 +64,7 @@ public:
   //                     an older coordinate system / time step than the previous one.
   // output: returns false if an error occured
   bool process (uint8_t *I1,uint8_t *I2,int32_t* dims,double imu_yaw, double imu_pitch,double imu_roll,bool replace=false);
-
+  bool process (uint8_t *I1,uint8_t *I2,int32_t* dims);
   using VisualOdometry::process;
 
 

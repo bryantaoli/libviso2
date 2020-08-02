@@ -1,3 +1,5 @@
+2020/08/02：change some codes to run this program.
+
 ####################################################################################
 # Copyright 2012. All rights reserved.                                             #
 # Institute of Measurement and Control Systems                                     #

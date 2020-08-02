@@ -32,6 +32,16 @@ VisualOdometryStereo::VisualOdometryStereo (parameters param) : param(param), Vi
 VisualOdometryStereo::~VisualOdometryStereo() {
 }
 
+bool VisualOdometryStereo::process (uint8_t *I1,uint8_t *I2,int32_t* dims) {
+  matcher->pushBack(I1,I2,dims,false);
+  if (Tr_valid) matcher->matchFeatures(2,&Tr_delta);
+  else          matcher->matchFeatures(2);
+  matcher->bucketFeatures(param.bucket.max_features,param.bucket.bucket_width,param.bucket.bucket_height);                          
+  p_matched = matcher->getMatches();
+  cout<<"processing"<<endl;
+  return updateMotion();
+}
+
 bool VisualOdometryStereo::process (uint8_t *I1,uint8_t *I2,int32_t* dims,double imu_yaw, double imu_pitch ,double imu_roll,bool replace) {
   matcher->pushBack(I1,I2,dims,replace);
   if (Tr_valid) matcher->matchFeatures(2,&Tr_delta);
