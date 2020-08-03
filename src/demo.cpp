@@ -37,7 +37,13 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA
 using namespace std;
 
 int main (int argc, char** argv) {
-
+  ifstream ground_truth;
+  ofstream f;
+  ofstream gt_tum;
+  f.open("result.tum");
+  gt_tum.open("gt.tum");
+  f << fixed;
+  gt_tum << fixed;
   // we need the path name to 2010_03_09_drive_0019 as input argument
   if (argc<2) {
     cerr << "Usage: ./viso2 path/to/sequence/2010_03_09_drive_0019" << endl;
@@ -46,7 +52,8 @@ int main (int argc, char** argv) {
 
   // sequence directory
   string dir = argv[1];
-  
+  string ground_truth_file = dir + "/insdata.txt";
+  ground_truth.open(ground_truth_file.c_str());
   // set most important visual odometry parameters
   // for a full parameter list, look at: viso_stereo.h
   VisualOdometryStereo::parameters param;
@@ -66,9 +73,17 @@ int main (int argc, char** argv) {
     
   // loop through all frames i=0:372
   for (int32_t i=0; i<373; i++) {
+    char oneline[1000];
+    double d_oneline[] = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0};
+    ground_truth.getline(oneline,1000);
+    sscanf(oneline,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",d_oneline,d_oneline+1,d_oneline+2,
+    d_oneline+3,d_oneline+4,d_oneline+5,d_oneline+6,d_oneline+7,d_oneline+8,d_oneline+9);
+    
+    gt_tum << d_oneline[0]/1e9 << " " <<  d_oneline[4] << " " << d_oneline[5] << " " << d_oneline[6] << " 1.0 0.0 0.0 0.0" <<endl;
 
     // input file names
-    char base_name[256]; sprintf(base_name,"%06d.png",i);
+    char base_name[256]; 
+    sprintf(base_name,"%06d.png",i);
     string left_img_file_name  = dir + "/I1_" + base_name;
     string right_img_file_name = dir + "/I2_" + base_name;
     
@@ -111,6 +126,8 @@ int main (int argc, char** argv) {
         cout << ", Matches: " << num_matches;
         cout << ", Inliers: " << 100.0*num_inliers/num_matches << " %" << ", Current pose: " << endl;
         cout << pose << endl << endl;
+
+        f  << d_oneline[0]/1e9 << " " <<  pose.val[0][3] << " " << pose.val[1][3] << " " << pose.val[2][3] << " 1.0 0.0 0.0 0.0" <<endl;
 
       } else {
         cout << " ... failed!" << endl;
